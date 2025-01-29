@@ -1,12 +1,17 @@
+import 'package:drag_and_drop/custom_component/component_shape.dart';
 import 'package:drag_and_drop/widgets/component_shape.dart';
 import 'package:drag_and_drop/drag_and_drop.dart';
 import 'package:flutter/material.dart';
 
 class DraggableItem extends StatefulWidget {
   final String label;
+  final String imagePath;
   Offset initialPosition;
 
-  DraggableItem({required this.label, required this.initialPosition});
+  DraggableItem(
+      {required this.label,
+      required this.initialPosition,
+      required this.imagePath});
 
   @override
   _DraggableItemState createState() => _DraggableItemState();
@@ -35,7 +40,10 @@ class _DraggableItemState extends State<DraggableItem> {
         child: SizedBox(
           width: 50,
           height: 50,
-          child: ComponentShape(label: widget.label, withBorder: false),
+          child: ComponentShape(
+            imagePath: widget.imagePath,
+            componentName: 'Test Component',
+          ),
         ),
       ),
     );

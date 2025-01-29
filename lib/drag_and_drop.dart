@@ -12,18 +12,19 @@ class _DragDropScreenState extends State<DragDropScreen> {
   List<DraggableItem> droppedItems = [];
   List<List<DraggableItem>> history = [];
   int historyIndex = -1;
-  List<String> componentList = [
-    "Diode",
-    "Transistor",
-    "Resistor",
-    "Capacitor",
-    "Inductor",
-    "Switch",
-    "Battery",
-    "LED",
-    "Motor",
-    "Transformer"
+  List<Map<String, String>> componentList = [
+    {"name": "Diode", "imagePath": "assets\images\Capacitor.png"},
+    {"name": "Transistor", "imagePath": "assets\images\Resistor.png"},
+    {"name": "Resistor", "imagePath": "assets/images/resistor.png"},
+    {"name": "Capacitor", "imagePath": "assets/images/capacitor.png"},
+    {"name": "Inductor", "imagePath": "assets/images/inductor.png"},
+    {"name": "Switch", "imagePath": "assets/images/switch.png"},
+    {"name": "Battery", "imagePath": "assets/images/battery.png"},
+    {"name": "LED", "imagePath": "assets/images/led.png"},
+    {"name": "Motor", "imagePath": "assets/images/motor.png"},
+    {"name": "Transformer", "imagePath": "assets/images/transformer.png"},
   ];
+
   final GlobalKey canvasKey = GlobalKey(); // Key for the canvas area
 
   void saveState() {
@@ -52,15 +53,18 @@ class _DragDropScreenState extends State<DragDropScreen> {
     }
   }
 
-  void onItemDropped(String label, Offset globalPosition) {
+  void onItemDropped(String label, Offset globalPosition, String imagePath) {
     RenderBox canvasBox =
         canvasKey.currentContext!.findRenderObject() as RenderBox;
     Offset localPosition =
         canvasBox.globalToLocal(globalPosition); // Convert to local position
 
     setState(() {
-      droppedItems
-          .add(DraggableItem(label: label, initialPosition: localPosition));
+      droppedItems.add(DraggableItem(
+        label: label,
+        initialPosition: localPosition,
+        imagePath: imagePath,
+      ));
       saveState();
     });
   }
@@ -87,7 +91,7 @@ class _DragDropScreenState extends State<DragDropScreen> {
           ResizableCustomWidget(
             // name: "",
             isRightExtendable: true,
-            componentNames: componentList,
+            components: componentList,
           ),
           Expanded(
             child: Stack(
@@ -95,7 +99,8 @@ class _DragDropScreenState extends State<DragDropScreen> {
               children: [
                 DragTarget<String>(
                   onAcceptWithDetails: (details) {
-                    onItemDropped(details.data, details.offset);
+                    onItemDropped(details.data, details.offset,
+                        'assets\images\Capacitor.png');
                   },
                   builder: (context, candidateData, rejectedData) {
                     return Container(
@@ -107,13 +112,14 @@ class _DragDropScreenState extends State<DragDropScreen> {
               ],
             ),
           ),
+          // Image.asset('assets/images/Capacitor.png'),
           ResizableCustomWidget(
             name: "Shunt",
             isLeftExtendable: true,
-            minWidth: 150,
+            minWidth: 300,
             width: 100,
-            componentNames: componentList,
             crossAxisCount: 3,
+            components: componentList,
           ),
         ],
       ),
