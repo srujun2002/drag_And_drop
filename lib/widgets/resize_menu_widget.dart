@@ -1,5 +1,7 @@
 import 'package:drag_and_drop/custom_component/component_shape.dart';
 import 'package:drag_and_drop/widgets/component_shape.dart';
+import 'package:drag_and_drop/widgets/custom_cards.dart';
+import 'package:drag_and_drop/widgets/custom_shell.dart';
 import 'package:flutter/material.dart';
 
 class ResizableCustomWidget extends StatefulWidget {
@@ -63,42 +65,36 @@ class _ResizableCustomWidgetState extends State<ResizableCustomWidget> {
                 ),
               ),
             ),
-          Column(
-            children: [
-              if (widget.name.isNotEmpty)
-                Container(
-                  padding: EdgeInsets.all(8),
-                  color: Colors.grey[200],
-                  child: Column(
-                    children: [
-                      Text(widget.name),
-                      VerticalDivider(color: Colors.black, thickness: 1),
-                    ],
-                  ),
+          Card(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // if (widget.name.isNotEmpty)
+                //   Container(
+                //     padding: EdgeInsets.all(8),
+                //     color: Colors.grey[200],
+                //     child: Column(
+                //       children: [
+                //         Text(widget.name),
+                //         VerticalDivider(color: Colors.black, thickness: 1),
+                //       ],
+                //     ),
+                //   ),
+                TextButton(onPressed: () {}, child: Text("Line")),
+                custom_shells(
+                  widget: widget,
+                  width: width,
+                  name: "Shunts",
                 ),
-              Expanded(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minWidth: widget.minWidth,
-                    maxWidth: MediaQuery.of(context).size.width,
-                  ),
-                  child: Container(
-                    alignment: Alignment.center,
-                    width: width,
-                    color: Colors.grey[300],
-                    child: GridView.count(
-                      crossAxisCount: widget.crossAxisCount,
-                      children: widget.components.map((component) {
-                        return custom_cards(
-                          item: component['name'] ?? '',
-                          imagePath: 'assets/images/Capacitor.png' ?? '',
-                        );
-                      }).toList(),
-                    ),
-                  ),
+                // LinePainterWidget(),
+
+                custom_shells(
+                  widget: widget,
+                  width: width,
+                  name: 'Series',
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           if (widget.isLeftExtendable)
             Positioned(
@@ -123,57 +119,6 @@ class _ResizableCustomWidgetState extends State<ResizableCustomWidget> {
               ),
             ),
         ],
-      ),
-    );
-  }
-}
-
-class custom_cards extends StatelessWidget {
-  const custom_cards({
-    required this.imagePath,
-    required this.item,
-    super.key,
-  });
-  final String item;
-  final String imagePath;
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Draggable<String>(
-        data: item,
-        feedback: SizedBox(
-          width: 50,
-          height: 50,
-          child: ComponentShape(
-            componentName: item,
-            imagePath: imagePath,
-          ),
-        ),
-        child: SizedBox(
-          width: 50,
-          height: 50,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ComponentShape(
-                componentName: item,
-                imagePath: imagePath,
-              ),
-              Text(item, style: TextStyle(fontSize: 12)),
-            ],
-          ),
-        ),
-        childWhenDragging: Opacity(
-          opacity: 0.5,
-          child: SizedBox(
-            width: 50,
-            height: 50,
-            child: ComponentShape(
-              componentName: item,
-              imagePath: imagePath,
-            ),
-          ),
-        ),
       ),
     );
   }

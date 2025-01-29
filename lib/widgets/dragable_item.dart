@@ -42,7 +42,7 @@ class _DraggableItemState extends State<DraggableItem> {
           height: 50,
           child: ComponentShape(
             imagePath: widget.imagePath,
-            componentName: 'Test Component',
+            componentName: widget.label,
           ),
         ),
       ),

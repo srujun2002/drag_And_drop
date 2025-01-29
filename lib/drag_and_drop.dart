@@ -1,4 +1,4 @@
-import 'package:drag_and_drop/widgets/component_shape.dart';
+import 'package:drag_and_drop/line/dragable_line.dart';
 import 'package:drag_and_drop/widgets/dragable_item.dart';
 import 'package:drag_and_drop/widgets/resize_menu_widget.dart';
 import 'package:flutter/material.dart';
@@ -10,22 +10,16 @@ class DragDropScreen extends StatefulWidget {
 
 class _DragDropScreenState extends State<DragDropScreen> {
   List<DraggableItem> droppedItems = [];
+  List<DraggableLine> lines = [];
   List<List<DraggableItem>> history = [];
   int historyIndex = -1;
   List<Map<String, String>> componentList = [
-    {"name": "Diode", "imagePath": "assets\images\Capacitor.png"},
-    {"name": "Transistor", "imagePath": "assets\images\Resistor.png"},
+    {"name": "Capacitor", "imagePath": "assets/images/Capacitor.png"},
+    {"name": "Diode", "imagePath": "assets/images/Tunnel Diode.png"},
     {"name": "Resistor", "imagePath": "assets/images/resistor.png"},
-    {"name": "Capacitor", "imagePath": "assets/images/capacitor.png"},
-    {"name": "Inductor", "imagePath": "assets/images/inductor.png"},
-    {"name": "Switch", "imagePath": "assets/images/switch.png"},
-    {"name": "Battery", "imagePath": "assets/images/battery.png"},
-    {"name": "LED", "imagePath": "assets/images/led.png"},
-    {"name": "Motor", "imagePath": "assets/images/motor.png"},
-    {"name": "Transformer", "imagePath": "assets/images/transformer.png"},
   ];
 
-  final GlobalKey canvasKey = GlobalKey(); // Key for the canvas area
+  final GlobalKey canvasKey = GlobalKey();
 
   void saveState() {
     if (historyIndex < history.length - 1) {
@@ -42,6 +36,15 @@ class _DragDropScreenState extends State<DragDropScreen> {
         droppedItems = List.from(history[historyIndex]);
       });
     }
+  }
+
+  void addLine(Offset globalPosition) {
+    RenderBox renderBox = context.findRenderObject() as RenderBox;
+    Offset localPosition = renderBox.globalToLocal(globalPosition);
+
+    setState(() {
+      lines.add(DraggableLine(initialPosition: localPosition));
+    });
   }
 
   void redo() {
@@ -75,44 +78,71 @@ class _DragDropScreenState extends State<DragDropScreen> {
       appBar: AppBar(
         title: Text("Drag & Drop Canvas"),
         actions: [
-          // IconButton(
-          //   icon: Icon(Icons.undo),
-          //   onPressed: undo,
-          // ),
-          // IconButton(
-          //   icon: Icon(Icons.redo),
-          //   onPressed: redo,
-          // ),
+          IconButton(
+            icon: Icon(Icons.undo),
+            onPressed: undo,
+          ),
+          IconButton(
+            icon: Icon(Icons.redo),
+            onPressed: redo,
+          ),
+          IconButton(
+            icon: Icon(Icons.save),
+            onPressed: () {
+              addLine(Offset(100, 200));
+            },
+          ),
         ],
       ),
       body: Row(
         children: [
           SizedBox(width: 10),
           ResizableCustomWidget(
-            // name: "",
             isRightExtendable: true,
             components: componentList,
           ),
           Expanded(
-            child: Stack(
-              key: canvasKey, // Assign the key to the canvas area
-              children: [
-                DragTarget<String>(
-                  onAcceptWithDetails: (details) {
-                    onItemDropped(details.data, details.offset,
-                        'assets\images\Capacitor.png');
-                  },
-                  builder: (context, candidateData, rejectedData) {
-                    return Container(
-                      color: Colors.grey[200], // Add background for the canvas
+            child: SafeArea(
+              child: Stack(
+                key: canvasKey,
+                children: [
+                  Positioned.fill(
+                    child: DragTarget<String>(
+                      onAcceptWithDetails: (details) {
+                        onItemDropped(
+                          details.data,
+                          details.offset,
+                          componentList.firstWhere((element) =>
+                                  element["name"] ==
+                                  details.data)["imagePath"] ??
+                              '',
+                        );
+                      },
+                      builder: (context, candidateData, rejectedData) {
+                        return Container(
+                          color: Colors.grey[200],
+                        );
+                      },
+                    ),
+                  ),
+                  ...droppedItems.map((item) {
+                    return Positioned(
+                      left: item.initialPosition.dx,
+                      top: item.initialPosition.dy,
+                      child: item,
                     );
-                  },
-                ),
-                ...droppedItems,
-              ],
+                  }).toList(),
+                  ...lines.map((line) {
+                    return Positioned(
+                      left: line.initialPosition.dx,
+                      top: line.initialPosition.dy,
+                      child: line,
+                    );
+                  }).toList(),
+                ],
+              ),
             ),
           ),
-          // Image.asset('assets/images/Capacitor.png'),
           ResizableCustomWidget(
             name: "Shunt",
             isLeftExtendable: true,
