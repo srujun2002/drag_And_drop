@@ -22,11 +22,13 @@ class _DraggableLineState extends State<DraggableLine> {
     position = widget.initialPosition;
   }
 
-  /// Calculates the position of a point based on rotation
-  Offset _getRotatedOffset(double xOffset) {
-    double x = position.dx + cos(angle) * xOffset;
-    double y = position.dy + sin(angle) * xOffset;
-    return Offset(x, y);
+  /// Calculates the end point of the line for correct label placement.
+  Offset _calculateLabelPosition(double distanceFromCenter) {
+    double radians = angle; // Rotation in radians
+    return Offset(
+      cos(radians) * distanceFromCenter,
+      sin(radians) * distanceFromCenter,
+    );
   }
 
   @override
@@ -43,35 +45,51 @@ class _DraggableLineState extends State<DraggableLine> {
         child: Stack(
           clipBehavior: Clip.none,
           children: [
-            // Labels (Start, Middle, End)
+            // Start Label
+            // Transform.translate(
+            //   offset: _calculateLabelPosition(-width / 2) + Offset(0, -20),
+            //   child: Transform.rotate(
+            //     angle: angle,
+            //     child: Text(
+            //       "Start",
+            //       style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+            //     ),
+            //   ),
+            // ),
+
+            // Middle Label
             Positioned(
-              left: _getRotatedOffset(-width / 2).dx - position.dx,
-              top: _getRotatedOffset(-width / 2).dy - position.dy - 20,
+              right: width - 10,
+              bottom: 30,
               child: Transform.rotate(
                 angle: angle,
-                child: Text("Start",
-                    style:
-                        TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                child: Text(
+                  "Start",
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                ),
               ),
             ),
             Positioned(
-              left: _getRotatedOffset(0).dx - position.dx,
-              top: _getRotatedOffset(0).dy - position.dy - 20,
+              left: width / 2 - 10,
+              bottom: 30,
               child: Transform.rotate(
                 angle: angle,
-                child: Text("Middle",
-                    style:
-                        TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                child: Text(
+                  "Middle",
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                ),
               ),
             ),
-            Positioned(
-              left: _getRotatedOffset(width / 2).dx - position.dx,
-              top: _getRotatedOffset(width / 2).dy - position.dy - 20,
+
+            // End Label
+            Transform.translate(
+              offset: _calculateLabelPosition(width) + Offset(0, -20),
               child: Transform.rotate(
                 angle: angle,
-                child: Text("End",
-                    style:
-                        TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                child: Text(
+                  "End",
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                ),
               ),
             ),
 
