@@ -1,5 +1,4 @@
-import 'package:drag_and_drop/custom_component/component_shape.dart';
-import 'package:drag_and_drop/widgets/component_shape.dart';
+import 'package:drag_and_drop/line/bus_component.dart';
 import 'package:drag_and_drop/widgets/custom_cards.dart';
 import 'package:drag_and_drop/widgets/custom_shell.dart';
 import 'package:flutter/material.dart';
@@ -21,8 +20,7 @@ class ResizableCustomWidget extends StatefulWidget {
   final bool isRightExtendable;
   final bool isLeftExtendable;
   final int crossAxisCount;
-  final List<Map<String, String>>
-      components; // List of maps with name and imagePath
+  final List<Map<String, String>> components;
 
   @override
   _ResizableCustomWidgetState createState() => _ResizableCustomWidgetState();
@@ -34,7 +32,7 @@ class _ResizableCustomWidgetState extends State<ResizableCustomWidget> {
   @override
   void initState() {
     super.initState();
-    width = widget.width; // Initialize width with the provided value
+    width = widget.width;
   }
 
   @override
@@ -67,31 +65,65 @@ class _ResizableCustomWidgetState extends State<ResizableCustomWidget> {
             ),
           Card(
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              // mainAxisSize: MainAxisSize.min,
               children: [
-                // if (widget.name.isNotEmpty)
-                //   Container(
-                //     padding: EdgeInsets.all(8),
-                //     color: Colors.grey[200],
-                //     child: Column(
-                //       children: [
-                //         Text(widget.name),
-                //         VerticalDivider(color: Colors.black, thickness: 1),
-                //       ],
-                //     ),
-                //   ),
-                TextButton(onPressed: () {}, child: Text("Line")),
-                custom_shells(
+                CustomShell(
+                  components: [
+                    {
+                      "name": "Capacitor",
+                      "imagePath": "assets/images/Capacitor.png"
+                    },
+                    {
+                      "name": "Diode",
+                      "imagePath": "assets/images/Tunnel Diode.png"
+                    },
+                    {
+                      "name": "Resistor",
+                      "imagePath": "assets/images/resistor.png"
+                    },
+                  ],
                   widget: widget,
                   width: width,
                   name: "Shunts",
                 ),
-                // LinePainterWidget(),
-
-                custom_shells(
+                CustomShell(
+                  components: [
+                    {
+                      "name": "Capacitor",
+                      "imagePath": "assets/images/Capacitor.png"
+                    },
+                    {
+                      "name": "Diode",
+                      "imagePath": "assets/images/Tunnel Diode.png"
+                    },
+                    {
+                      "name": "Resistor",
+                      "imagePath": "assets/images/resistor.png"
+                    },
+                  ],
                   widget: widget,
                   width: width,
                   name: 'Series',
+                ),
+                // BusComponent(initialPosition: Offset(100, 100)),
+                CustomShell(
+                  components: [
+                    {
+                      "name": "Capacitor",
+                      "imagePath": "assets/images/Capacitor.png"
+                    },
+                    // {
+                    //   "name": "Diode",
+                    //   "imagePath": "assets/images/Tunnel Diode.png"
+                    // },
+                    // {
+                    //   "name": "Resistor",
+                    //   "imagePath": "assets/images/resistor.png"
+                    // },
+                  ],
+                  widget: widget,
+                  width: width,
+                  name: 'Transformers',
                 ),
               ],
             ),

@@ -1,76 +1,135 @@
-import 'package:drag_and_drop/line/line_painter.dart';
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 class DraggableLine extends StatefulWidget {
   final Offset initialPosition;
 
-  const DraggableLine({super.key, required this.initialPosition});
+  const DraggableLine({Key? key, required this.initialPosition})
+      : super(key: key);
 
   @override
   _DraggableLineState createState() => _DraggableLineState();
 }
 
 class _DraggableLineState extends State<DraggableLine> {
-  late Offset start;
-  late Offset end;
+  late Offset position;
+  double width = 100;
+  double angle = 0.0;
 
   @override
   void initState() {
     super.initState();
-    start = widget.initialPosition;
-    end = Offset(start.dx + 100, start.dy);
+    position = widget.initialPosition;
+  }
+
+  /// Calculates the position of a point based on rotation
+  Offset _getRotatedOffset(double xOffset) {
+    double x = position.dx + cos(angle) * xOffset;
+    double y = position.dy + sin(angle) * xOffset;
+    return Offset(x, y);
   }
 
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      left: start.dx,
-      top: start.dy,
+      left: position.dx,
+      top: position.dy,
       child: GestureDetector(
         onPanUpdate: (details) {
           setState(() {
-            start = Offset(
-                start.dx + details.delta.dx, start.dy + details.delta.dy);
-            end = Offset(end.dx + details.delta.dx, end.dy + details.delta.dy);
+            position += details.delta;
           });
         },
         child: Stack(
+          clipBehavior: Clip.none,
           children: [
-            CustomPaint(
-              size: Size(300, 300),
-              painter: LinePainter(start: start, end: end),
+            // Labels (Start, Middle, End)
+            Positioned(
+              left: _getRotatedOffset(-width / 2).dx - position.dx,
+              top: _getRotatedOffset(-width / 2).dy - position.dy - 20,
+              child: Transform.rotate(
+                angle: angle,
+                child: Text("Start",
+                    style:
+                        TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+              ),
             ),
-            _resizeHandle(isStart: true),
-            _resizeHandle(isStart: false),
-          ],
-        ),
-      ),
-    );
-  }
+            Positioned(
+              left: _getRotatedOffset(0).dx - position.dx,
+              top: _getRotatedOffset(0).dy - position.dy - 20,
+              child: Transform.rotate(
+                angle: angle,
+                child: Text("Middle",
+                    style:
+                        TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+              ),
+            ),
+            Positioned(
+              left: _getRotatedOffset(width / 2).dx - position.dx,
+              top: _getRotatedOffset(width / 2).dy - position.dy - 20,
+              child: Transform.rotate(
+                angle: angle,
+                child: Text("End",
+                    style:
+                        TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+              ),
+            ),
 
-  Widget _resizeHandle({required bool isStart}) {
-    return Positioned(
-      left: isStart ? start.dx - 10 : end.dx - 10,
-      top: isStart ? start.dy - 10 : end.dy - 10,
-      child: GestureDetector(
-        onPanUpdate: (details) {
-          setState(() {
-            if (isStart) {
-              start = Offset(
-                  start.dx + details.delta.dx, start.dy + details.delta.dy);
-            } else {
-              end =
-                  Offset(end.dx + details.delta.dx, end.dy + details.delta.dy);
-            }
-          });
-        },
-        child: Container(
-          width: 20,
-          height: 20,
-          decoration: BoxDecoration(
-            color: Colors.red,
-            shape: BoxShape.circle,
-          ),
+            // Line with rotation
+            Transform.rotate(
+              angle: angle,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Left Resize Handle
+                  GestureDetector(
+                    onPanUpdate: (details) {
+                      setState(() {
+                        width = (width - details.delta.dx).clamp(20, 300);
+                        position =
+                            Offset(position.dx + details.delta.dx, position.dy);
+                      });
+                    },
+                    child: Container(width: 10, height: 20, color: Colors.blue),
+                  ),
+
+                  // The Line
+                  Container(width: width, height: 4, color: Colors.black),
+
+                  // Right Resize Handle
+                  GestureDetector(
+                    onPanUpdate: (details) {
+                      setState(() {
+                        width = (width + details.delta.dx).clamp(20, 300);
+                      });
+                    },
+                    child: Container(width: 10, height: 20, color: Colors.blue),
+                  ),
+                ],
+              ),
+            ),
+
+            // Rotation Handle
+            Positioned(
+              left: width / 2 - 10,
+              top: 10,
+              child: GestureDetector(
+                onPanUpdate: (details) {
+                  setState(() {
+                    angle += details.delta.dy * 0.01; // Adjust rotation
+                  });
+                },
+                child: Container(
+                  width: 20,
+                  height: 20,
+                  decoration:
+                      BoxDecoration(shape: BoxShape.circle, color: Colors.red),
+                  child:
+                      Icon(Icons.rotate_right, color: Colors.white, size: 16),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

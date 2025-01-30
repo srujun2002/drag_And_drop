@@ -2,17 +2,19 @@ import 'package:drag_and_drop/widgets/custom_cards.dart';
 import 'package:drag_and_drop/widgets/resize_menu_widget.dart';
 import 'package:flutter/material.dart';
 
-class custom_shells extends StatelessWidget {
-  const custom_shells({
+class CustomShell extends StatelessWidget {
+  const CustomShell({
     super.key,
     required this.widget,
     required this.width,
     required this.name,
+    required this.components,
   });
 
   final ResizableCustomWidget widget;
   final double width;
   final String name;
+  final List<Map<String, String>> components;
 
   @override
   Widget build(BuildContext context) {
@@ -37,8 +39,8 @@ class custom_shells extends StatelessWidget {
                     color: Colors.grey[300],
                     child: GridView.count(
                       crossAxisCount: widget.crossAxisCount,
-                      children: widget.components.map((component) {
-                        return custom_cards(
+                      children: components.map((component) {
+                        return CustomCards(
                           item: component['name'] ?? '',
                           imagePath: component['imagePath'] ?? '',
                         );

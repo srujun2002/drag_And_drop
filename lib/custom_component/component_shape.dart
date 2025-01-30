@@ -10,12 +10,12 @@ class ComponentShape extends StatelessWidget {
   Widget build(BuildContext context) {
     return Image.asset(
       imagePath,
-      width: 50,
-      height: 50,
+      width: 20,
+      height: 20,
       errorBuilder: (context, error, stackTrace) {
         return Container(
-          width: 50,
-          height: 50,
+          width: 30,
+          height: 30,
           color: Colors.grey,
           child: Center(
             child: Text(
