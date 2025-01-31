@@ -14,7 +14,7 @@ import 'package:drag_and_drop/main.dart';
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(DragDropScreen());
+    await tester.pumpWidget(CanvasScreen());
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);
